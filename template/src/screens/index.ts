@@ -2,3 +2,8 @@ export { default as Example } from './Example/Example';
 export { default as Startup } from './Startup/Startup';
 export { default as Login } from './Auth/Login';
 export { default as Signup } from './Auth/Signup';
+export { default as Home } from './Home/Home';
+export { default as Profile } from './Profile/Profile';
+export { default as Leaderboard } from './Leaderboard/Leaderboard';
+export { default as Notifications } from './Notifications/Notifications';
+export { default as Search } from './Search/Search';

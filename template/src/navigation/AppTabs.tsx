@@ -1,23 +1,36 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import React from 'react';
 import { Text } from 'react-native';
-import { useTheme } from '@/theme';
+import { Home, Leaderboard, Notifications, Profile, Search } from '@/screens';
 
 const Tab = createBottomTabNavigator();
 
-function Placeholder({ title }: { title: string }) {
-  const { layout, gutters, fonts } = useTheme();
-  return <Text style={[layout.justifyCenter, gutters.padding_24, fonts.size_24]}>{title}</Text>;
-}
-
 export default function AppTabs() {
   return (
-    <Tab.Navigator screenOptions={{ headerShown: false }}>
-      <Tab.Screen name="Home" children={() => <Placeholder title="Home" />} />
-      <Tab.Screen name="Profile" children={() => <Placeholder title="Profile" />} />
-      <Tab.Screen name="Leaderboard" children={() => <Placeholder title="Leaderboard" />} />
-      <Tab.Screen name="Notifications" children={() => <Placeholder title="Notifications" />} />
-      <Tab.Screen name="Search" children={() => <Placeholder title="Search" />} />
+    <Tab.Navigator
+      screenOptions={({ route }) => ({
+        headerShown: false,
+        tabBarIcon: ({ color }) => {
+          const emojiMap: Record<string, string> = {
+            Home: '🏠',
+            Profile: '👤',
+            Leaderboard: '🏆',
+            Notifications: '🔔',
+            Search: '🔎',
+          };
+          const emoji = emojiMap[route.name] ?? '•';
+          return <Text style={{ color, fontSize: 16 }}>{emoji}</Text>;
+        },
+        tabBarActiveTintColor: '#000',
+        tabBarInactiveTintColor: '#666',
+        tabBarLabelStyle: { fontSize: 12 },
+      })}
+    >
+      <Tab.Screen name="Home" component={Home} />
+      <Tab.Screen name="Leaderboard" component={Leaderboard} />
+      <Tab.Screen name="Notifications" component={Notifications} />
+      <Tab.Screen name="Search" component={Search} />
+      <Tab.Screen name="Profile" component={Profile} />
     </Tab.Navigator>
   );
 }

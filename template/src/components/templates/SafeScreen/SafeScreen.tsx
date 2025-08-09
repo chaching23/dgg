@@ -28,7 +28,7 @@ function SafeScreen({
   return (
     <SafeAreaView
       {...props}
-      mode="padding"
+      edges={['left', 'right']}
       style={[layout.flex_1, { backgroundColor: navigationTheme.colors.background }, style]}
     >
       <StatusBar

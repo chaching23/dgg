@@ -53,7 +53,7 @@ function Example() {
         handleResetError();
       }}
     >
-      <ScrollView>
+      <ScrollView contentContainerStyle={{ paddingHorizontal: 10, paddingTop: 0, paddingBottom: 10 }}>
         <View
           style={[
             layout.justifyCenter,
@@ -74,7 +74,8 @@ function Example() {
           </View>
         </View>
 
-        <View style={[gutters.paddingHorizontal_32, gutters.marginTop_40]}>
+        <View style={[gutters.marginTop_40]}
+        >
           <View style={[gutters.marginTop_40]}>
             <Text style={[fonts.size_40, fonts.gray800, fonts.bold]}>
               {t('screen_example.title')}

@@ -13,6 +13,9 @@ const config = {
   resolver: {
     assetExts: assetExts.filter((extension) => extension !== 'svg'),
     sourceExts: [...sourceExts, 'svg'],
+    extraNodeModules: {
+      'react-dom': require('path').resolve(__dirname, 'shims/react-dom.js'),
+    },
   },
   transformer: {
     babelTransformerPath: require.resolve('react-native-svg-transformer'),

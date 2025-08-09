@@ -64,8 +64,8 @@ export const config = {
       },
       navigationColors: {
         ...DarkTheme.colors,
-        background: colorsDark.purple50,
-        card: colorsDark.purple50,
+        background: '#000000',
+        card: '#000000',
       },
     },
   },

@@ -2,6 +2,8 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import React from 'react';
 import { Text } from 'react-native';
 import { useTheme } from '@/theme';
+import Home from '@/screens/Home/Home';
+import { useColorMode } from 'native-base';
 
 const Tab = createBottomTabNavigator();
 
@@ -11,9 +13,10 @@ function Placeholder({ title }: { title: string }) {
 }
 
 export default function AppTabs() {
+  useColorMode();
   return (
     <Tab.Navigator screenOptions={{ headerShown: false }}>
-      <Tab.Screen name="Home" children={() => <Placeholder title="Home" />} />
+      <Tab.Screen name="Home" component={Home} />
       <Tab.Screen name="Profile" children={() => <Placeholder title="Profile" />} />
       <Tab.Screen name="Leaderboard" children={() => <Placeholder title="Leaderboard" />} />
       <Tab.Screen name="Notifications" children={() => <Placeholder title="Notifications" />} />

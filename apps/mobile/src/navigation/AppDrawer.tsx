@@ -4,6 +4,8 @@ import AppTabs from './AppTabs';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '@/theme';
 import { useAuthController } from '@/hooks';
+import { IconButton, Icon, useColorMode } from 'native-base';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 const Drawer = createDrawerNavigator();
 
@@ -39,12 +41,24 @@ function LogoutScreen() {
 }
 
 export default function AppDrawer() {
+  const { colorMode, toggleColorMode } = useColorMode();
   return (
-    <Drawer.Navigator>
-      <Drawer.Screen component={AppTabs} name="App" options={{ title: 'App' }} />
-      <Drawer.Screen component={SettingsScreen} name="Settings" />
+    <Drawer.Navigator
+      screenOptions={{
+        headerTitle: '',
+        headerRight: () => (
+          <IconButton onPress={toggleColorMode}>
+            <Icon as={MaterialIcons} name={colorMode === 'dark' ? 'light-mode' : 'dark-mode'} color={colorMode === 'dark' ? 'white' : 'black'} />
+          </IconButton>
+        ),
+        headerStyle: { backgroundColor: '#000' },
+        headerTintColor: '#fff',
+      }}
+    >
+      <Drawer.Screen component={AppTabs} name="Home" options={{ title: 'Home' }} />
+      <Drawer.Screen component={SettingsScreen} name="Settings" options={{ title: 'Settings' }} />
       <Drawer.Screen component={AddMoneyScreen} name="AddMoney" options={{ title: 'Add Money' }} />
-      <Drawer.Screen component={LogoutScreen} name="Logout" />
+      <Drawer.Screen component={LogoutScreen} name="Logout" options={{ title: 'Logout' }} />
     </Drawer.Navigator>
   );
 }

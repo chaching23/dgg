@@ -1,6 +1,6 @@
 import type { RootScreenProps } from '@/navigation/types';
 import React, { useState } from 'react';
-import { Alert, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, Image, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '@/theme';
 import { SafeScreen } from '@/components/templates';
@@ -27,6 +27,12 @@ function Login({ navigation }: RootScreenProps<Paths.Login>) {
   return (
     <SafeScreen style={[{ backgroundColor: '#000000' }]}>
       <View style={[layout.flex_1, layout.justifyCenter, gutters.padding_24]}>
+        <View style={[layout.itemsCenter, gutters.marginBottom_24]}>
+          <Image
+            source={require('@/assets/branding/disrupt.png')}
+            style={{ width: 280, height: 100, resizeMode: 'contain' }}
+          />
+        </View>
         <Text style={[fonts.size_24, fonts.bold, gutters.marginBottom_16]}>
           <Text style={{ color: '#FFFFFF' }}>
             {t('login_title', { defaultValue: 'Login' })}

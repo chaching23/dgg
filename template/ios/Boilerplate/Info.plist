@@ -53,5 +53,16 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>disrupt</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>disrupt</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>

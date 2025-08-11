@@ -1,6 +1,6 @@
 import { AppRegistry } from 'react-native';
 
-import { name as appName } from './app.json';
+const appName = 'Boilerplate';
 import App from './src/App';
 
 // if (__DEV__) {

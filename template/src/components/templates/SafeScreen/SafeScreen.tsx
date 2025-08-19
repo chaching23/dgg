@@ -24,15 +24,16 @@ function SafeScreen({
   ...props
 }: Properties) {
   const { layout, navigationTheme, variant } = useTheme();
+  const bg = navigationTheme.colors.background;
 
   return (
     <SafeAreaView
       {...props}
       edges={['left', 'right']}
-      style={[layout.flex_1, { backgroundColor: navigationTheme.colors.background }, style]}
+      style={[layout.flex_1, { backgroundColor: bg }, style]}
     >
       <StatusBar
-        backgroundColor={navigationTheme.colors.background}
+        backgroundColor={bg}
         barStyle={variant === 'dark' ? 'light-content' : 'dark-content'}
       />
       <ErrorBoundary onReset={onResetError}>

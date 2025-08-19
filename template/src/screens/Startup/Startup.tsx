@@ -34,7 +34,7 @@ function Startup({ navigation }: RootScreenProps<Paths.Startup>) {
   }, [isSuccess, navigation]);
 
   return (
-    <SafeScreen>
+    <SafeScreen style={[{ backgroundColor: '#000000' }] }>
       <View
         style={[
           layout.flex_1,

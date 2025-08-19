@@ -7,3 +7,6 @@ export { default as Profile } from './Profile/Profile';
 export { default as Leaderboard } from './Leaderboard/Leaderboard';
 export { default as Notifications } from './Notifications/Notifications';
 export { default as Search } from './Search/Search';
+export { default as AddMoney } from './Wallet/AddMoney';
+export { default as Results } from './Results/Results';
+export { default as Rewards } from './Rewards/Rewards';

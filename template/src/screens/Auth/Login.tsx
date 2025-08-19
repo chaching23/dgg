@@ -1,8 +1,7 @@
 import type { RootScreenProps } from '@/navigation/types';
 import React, { useEffect, useState } from 'react';
-import { Alert, Image, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { UIButton } from '@/components/disrupt/UIButton';
-import { UITextField } from '@/components/disrupt/UITextField';
+import { Alert, Image, Text, TouchableOpacity, View } from 'react-native';
+import GradientInput from '@/components/disrupt/GradientInput';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '@/theme';
 import { SafeScreen } from '@/components/templates';
@@ -13,7 +12,7 @@ import { storage, StorageKeys } from '@/storage';
 
 function Login({ navigation }: RootScreenProps<Paths.Login>) {
   const { t } = useTranslation();
-  const { components, gutters, layout, fonts } = useTheme();
+  const { components, gutters, layout, fonts, variant } = useTheme();
   const [loading, setLoading] = useState(false);
 
   const [email, setEmail] = useState('');
@@ -68,41 +67,56 @@ function Login({ navigation }: RootScreenProps<Paths.Login>) {
   }, [navigation]);
 
   const onDiscord = async () => {
-    const redirectTo = 'disrupt://auth/callback';
-    await supabase.auth.signInWithOAuth({ provider: 'discord', options: { redirectTo } });
+    try {
+      const redirectTo = 'disrupt://auth/callback';
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'discord',
+        options: { redirectTo, scopes: 'identify email' },
+      });
+      if (error) throw error;
+      if (data?.url) {
+        await Linking.openURL(data.url);
+      } else {
+        Alert.alert('Discord', 'No auth URL returned. Check Supabase provider config.');
+      }
+    } catch (e: any) {
+      Alert.alert('Discord login failed', e?.message ?? 'Unknown error');
+    }
   };
 
   return (
-    <SafeScreen style={[{ backgroundColor: '#000000' }]}>
+    <SafeScreen>
       <View style={[layout.flex_1, layout.justifyCenter, gutters.padding_24]}>
         <View style={[layout.itemsCenter, gutters.marginBottom_24]}>
           <Image
-            source={require('@/assets/branding/DisruptG.png')}
-            style={{ width: 580, height: 300, resizeMode: 'contain' }}
+            source={require('@/assets/branding/DisruptP.png')}
+            style={{ width: 480, height: 350, resizeMode: 'contain' }}
           />
         </View>
         <Text style={[fonts.size_24, fonts.bold, gutters.marginBottom_16]}>
-          <Text style={{ color: '#FFFFFF' }}>
+          <Text style={{ color: '#00CEC8' }}>
             {t('login_title', { defaultValue: 'Login' })}
           </Text>
         </Text>
 
-        <TextInput
+        <GradientInput
           autoCapitalize="none"
           autoCorrect={false}
           keyboardType="email-address"
           onChangeText={setEmail}
           placeholder={t('email', { defaultValue: 'Email' })}
           placeholderTextColor="#CCCCCC"
-          style={[components.input, gutters.marginBottom_12, { color: '#FFFFFF', backgroundColor: '#1B1B1B', borderColor: '#444444' }]}
+          containerStyle={[gutters.marginBottom_16]}
+          borderRadius={16}
           value={email}
         />
-        <TextInput
+        <GradientInput
           onChangeText={setPassword}
           placeholder={t('password', { defaultValue: 'Password' })}
           placeholderTextColor="#CCCCCC"
           secureTextEntry
-          style={[components.input, gutters.marginBottom_24, { color: '#FFFFFF', backgroundColor: '#1B1B1B', borderColor: '#444444' }]}
+          containerStyle={[gutters.marginBottom_24]}
+          borderRadius={16}
           value={password}
         />
 
@@ -116,7 +130,7 @@ function Login({ navigation }: RootScreenProps<Paths.Login>) {
           onPress={() => navigation.navigate(Paths.Signup)}
           style={[gutters.marginTop_16]}
         >
-          <Text style={[fonts.size_12, { color: '#FFFFFF' }] }>
+          <Text style={[fonts.size_12, variant === 'dark' ? { color: '#FFFFFF' } : { color: '#111111' }] }>
             {t('no_account', { defaultValue: "Don't have an account? Sign up" })}
           </Text>
         </TouchableOpacity>

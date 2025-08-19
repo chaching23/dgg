@@ -8,6 +8,7 @@ import { Paths } from '@/navigation/paths';
 import { useTheme } from '@/theme';
 
 import { Login, Signup, Startup } from '@/screens';
+import AddMoney from '@/screens/Wallet/AddMoney';
 import { storage, StorageKeys } from '@/storage';
 import AppDrawer from '@/navigation/AppDrawer';
 
@@ -24,12 +25,38 @@ function ApplicationNavigator() {
         <Stack.Navigator key={variant} screenOptions={{ headerShown: false }}>
           <Stack.Screen component={Startup} name={Paths.Startup} />
           {token ? (
-            <Stack.Screen component={AppDrawer} name={Paths.Example} />
+            <>
+              <Stack.Screen component={AppDrawer} name={Paths.Example} />
+              <Stack.Screen
+                component={AddMoney}
+                name={Paths.AddMoneyModal}
+                options={{
+                  presentation: 'modal',
+                  headerShown: true,
+                  headerStyle: { backgroundColor: '#000000' },
+                  headerTitle: 'Add Money',
+                  headerTintColor: '#FFFFFF',
+                  headerShadowVisible: false,
+                }}
+              />
+            </>
           ) : (
             <>
               <Stack.Screen component={Login} name={Paths.Login} />
               <Stack.Screen component={Signup} name={Paths.Signup} />
               <Stack.Screen component={AppDrawer} name={Paths.Example} />
+              <Stack.Screen
+                component={AddMoney}
+                name={Paths.AddMoneyModal}
+                options={{
+                  presentation: 'modal',
+                  headerShown: true,
+                  headerStyle: { backgroundColor: '#000000' },
+                  headerTitle: 'Add Money',
+                  headerTintColor: '#FFFFFF',
+                  headerShadowVisible: false,
+                }}
+              />
             </>
           )}
         </Stack.Navigator>

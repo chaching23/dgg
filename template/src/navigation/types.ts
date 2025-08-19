@@ -10,4 +10,5 @@ export type RootStackParamList = {
   [Paths.Startup]: undefined;
   [Paths.Login]: undefined;
   [Paths.Signup]: undefined;
+  [Paths.AddMoneyModal]: undefined;
 };

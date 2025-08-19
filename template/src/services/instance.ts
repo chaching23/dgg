@@ -2,8 +2,8 @@
 import 'react-native-url-polyfill/auto';
 import { createClient } from '@supabase/supabase-js';
 
-export const SUPABASE_URL = 'https://dhkfkddclnoriilgbnkx.supabase.co';
-export const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRoa2ZrZGRjbG5vcmlpbGdibmt4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ5MzMwMTIsImV4cCI6MjA3MDUwOTAxMn0.YxjGZb15YahcHyrz03L41d6GReWSao6xDxelUNyBdHA';
+export const SUPABASE_URL = process.env.SUPABASE_URL ?? 'https://dhkfkddclnoriilgbnkx.supabase.co';
+export const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY ?? 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRoa2ZrZGRjbG5vcmlpbGdibmt4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ5MzMwMTIsImV4cCI6MjA3MDUwOTAxMn0.YxjGZb15YahcHyrz03L41d6GReWSao6xDxelUNyBdHA';
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: {
@@ -25,7 +25,9 @@ export async function resolveEmailIfUsername(identifier: string): Promise<string
 import ky from 'ky';
 import { storage, StorageKeys } from '@/storage';
 
-const prefixUrl = `${process.env.API_URL ?? ''}/`;
+const DEFAULT_PUBLIC_API = 'https://jsonplaceholder.typicode.com';
+const apiBase = (process.env.API_URL ?? DEFAULT_PUBLIC_API).replace(/\/$/, '');
+const prefixUrl = `${apiBase}/`;
 
 export const instance = ky.extend({
   headers: {

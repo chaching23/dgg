@@ -4,4 +4,5 @@ export const enum Paths {
   Login = 'login',
   Signup = 'signup',
   AddMoneyModal = 'addMoneyModal',
+  GameMatch = 'gameMatch',
 }

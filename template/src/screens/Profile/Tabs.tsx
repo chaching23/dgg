@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { storage, StorageKeys } from '@/storage';
 import BalanceSparkline from './BalanceSparkline';
+import CombinedSparkline from './CombinedSparkline';
 
 export default function Tabs() {
   const [active, setActive] = useState<'ETF' | 'WINNINGS'>('ETF');
@@ -40,9 +41,9 @@ export default function Tabs() {
         ))}
       </View>
       {active === 'ETF' ? (
-        <BalanceSparkline data={etf} color={'#00CEC8'} showShadow withAxis />
+        <CombinedSparkline etf={etf} winnings={win} etfColor={'#00CEC8'} winningsColor={'#5BAEA9'} withAxis />
       ) : (
-        <BalanceSparkline data={win} color={'#5BAEA9'} showShadow withAxis />
+        <CombinedSparkline etf={etf} winnings={win} etfColor={'#00CEC8'} winningsColor={'#5BAEA9'} withAxis />
       )}
     </View>
   );

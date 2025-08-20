@@ -6,6 +6,7 @@ const { auth, db } = require('./firebaseAdmin');
 const app = express();
 app.use(cors());
 app.use(express.json());
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', env: process.env.NODE_ENV || 'development' });
@@ -43,6 +44,33 @@ app.post('/verifyToken', async (req, res) => {
     return res.json({ uid: decodedToken.uid, email: decodedToken.email || null });
   } catch (error) {
     return res.status(401).json({ error: 'Invalid token' });
+  }
+});
+
+// Create Stripe Checkout Session for adding money
+app.post('/payments/create-checkout-session', async (req, res) => {
+  try {
+    const { amount = 1000, currency = 'usd', customer_email } = req.body || {};
+    const session = await stripe.checkout.sessions.create({
+      mode: 'payment',
+      payment_method_types: ['card'],
+      line_items: [
+        {
+          price_data: {
+            currency,
+            unit_amount: Number(amount),
+            product_data: { name: 'Wallet top-up' },
+          },
+          quantity: 1,
+        },
+      ],
+      success_url: (process.env.CHECKOUT_SUCCESS_URL || 'myapp://stripe/success') + '?session_id={CHECKOUT_SESSION_ID}',
+      cancel_url: process.env.CHECKOUT_CANCEL_URL || 'myapp://stripe/cancel',
+      customer_email,
+    });
+    res.json({ id: session.id, url: session.url });
+  } catch (e) {
+    res.status(400).json({ error: e.message });
   }
 });
 

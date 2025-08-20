@@ -2,10 +2,11 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import React from 'react';
 import { useTheme } from '@/theme';
 import { Text } from 'react-native';
-import { Home, Leaderboard, Profile } from '@/screens';
+import { Leaderboard, Profile } from '@/screens';
+import PlayStack from '@/screens/Play/PlayStack';
 import Results from '@/screens/Results/Results';
 import Rewards from '@/screens/Rewards/Rewards';
-import { ControllerIcon, GiftIcon, ListIcon, TrophyIcon, UserIcon } from '@/components/disrupt/PixelIcons';
+import { PlusIcon, SquareIcon, TriangleIcon, CrossIcon, CircleIcon, DollarIcon } from '@/components/disrupt/PixelIcons';
 
 const Tab = createBottomTabNavigator();
 
@@ -17,18 +18,25 @@ export default function AppTabs() {
       screenOptions={({ route }) => ({
         headerShown: false,
         tabBarIcon: ({ color }) => {
-          const size = 18;
+          const sizeByRoute: Record<string, number> = {
+            Results: 28,
+            Leaders: 32,
+            Play: 40,
+            Rewards: 32,
+            Profile: 28,
+          };
+          const size = sizeByRoute[route.name] ?? 20;
           switch (route.name) {
             case 'Results':
-              return <TrophyIcon size={size} color={color as string} />;
-            case 'Leaderboard':
-              return <ListIcon size={size} color={color as string} />;
+              return <SquareIcon size={size} color={color as string} />;
+            case 'Leaders':
+              return <TriangleIcon size={size} color={color as string} />;
             case 'Play':
-              return <ControllerIcon size={size} color={color as string} />;
+              return <CrossIcon size={size} color={color as string} />;
             case 'Rewards':
-              return <GiftIcon size={size} color={color as string} />;
+              return <DollarIcon size={size} color={color as string} />;
             case 'Profile':
-              return <UserIcon size={size} color={color as string} />;
+              return <CircleIcon size={size} color={color as string} />;
             default:
               return <Text style={{ color, fontSize: 16 }}>•</Text>;
           }
@@ -43,8 +51,8 @@ export default function AppTabs() {
       })}
     >
       <Tab.Screen name="Results" component={Results} />
-      <Tab.Screen name="Leaderboard" component={Leaderboard} />
-      <Tab.Screen name="Play" component={Home} />
+      <Tab.Screen name="Leaders" component={Leaderboard} />
+      <Tab.Screen name="Play" component={PlayStack} />
       <Tab.Screen name="Rewards" component={Rewards} />
       <Tab.Screen name="Profile" component={Profile} />
     </Tab.Navigator>

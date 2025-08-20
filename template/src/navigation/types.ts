@@ -11,4 +11,5 @@ export type RootStackParamList = {
   [Paths.Login]: undefined;
   [Paths.Signup]: undefined;
   [Paths.AddMoneyModal]: undefined;
+  [Paths.GameMatch]: { gameId: string; gameTitle: string };
 };

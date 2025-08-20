@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { Alert, Animated, Easing, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Animated, Easing, Linking, Platform, Text, TouchableOpacity, View } from 'react-native';
 import { SafeScreen } from '@/components/templates';
 import { useTheme } from '@/theme';
 import GradientInput from '@/components/disrupt/GradientInput';
 import PixelButton from '@/components/disrupt/PixelButton';
 import { storage, StorageKeys } from '@/storage';
+import { initIap, purchaseWallet10, getProducts } from '@/services/iap';
 
 export default function AddMoney() {
   const { layout, gutters, fonts, variant } = useTheme();
@@ -23,38 +24,32 @@ export default function AddMoney() {
   const setBalance = (value: number) => {
     setBalanceState(value);
     storage.set(StorageKeys.walletBalance, value);
-    try {
-      const raw = storage.getString(StorageKeys.walletHistory) || '[]';
-      const arr = JSON.parse(raw) as number[];
-      arr.push(value);
-      storage.set(StorageKeys.walletHistory, JSON.stringify(arr).slice(0, 4000));
-    } catch {}
   };
   const setGems = (value: number) => {
     setGemsState(value);
     storage.set(StorageKeys.walletGems, value);
   };
 
+  React.useEffect(() => {
+    (async () => {
+      await initIap();
+      const products = await getProducts();
+      // eslint-disable-next-line no-console
+      console.log('IAP products', products);
+    })();
+  }, []);
+
   const onQuickAdd = (val: number) => {
     setAmount(String(val));
   };
 
-  const onAddMoney = () => {
-    const parsed = parseFloat(amount);
-    if (!Number.isFinite(parsed) || parsed <= 0) {
-      Alert.alert('Invalid amount', 'Enter a positive number.');
-      return;
+  const WEBSITE_CHECKOUT_URL = 'https://buy.stripe.com/test_7sYeVe0iffyp1kNaw74Ja00';
+  const onWebsiteCheckout = async () => {
+    try {
+      await Linking.openURL(WEBSITE_CHECKOUT_URL);
+    } catch (e: any) {
+      Alert.alert('Open website failed', e?.message || String(e));
     }
-    const newBalance = balance + 10; // fixed $10 per request
-    const newGems = gems + 100;
-    setBalance(newBalance);
-    setGems(newGems);
-    setAmount('');
-
-    burst.setValue(0);
-    Animated.timing(burst, { toValue: 1, duration: 850, easing: Easing.out(Easing.exp), useNativeDriver: true }).start(() => {
-      Alert.alert('Success', `Added $10 and 100 rubies!`);
-    });
   };
 
   return (
@@ -92,11 +87,44 @@ export default function AddMoney() {
         </View>
 
         <View style={{ height: 24 }} />
-        <PixelButton title="Apple Pay - Add $10" onPress={onAddMoney} />
+        <PixelButton title="Go to website for purchase (no fee) – $10.00" onPress={onWebsiteCheckout} />
         <View style={{ height: 10 }} />
-        <PixelButton title="Stripe - Add $10" onPress={onAddMoney} />
+        <PixelButton title="Apple In‑App Purchase (30% fee) – $12.99" onPress={async () => {
+          try {
+            await purchaseWallet10(() => {
+              const newBalance = balance + 10;
+              setBalance(newBalance);
+              try {
+                const raw = storage.getString(StorageKeys.walletHistory) || '[]';
+                const arr = JSON.parse(raw) as any[];
+                arr.unshift({ id: String(Date.now()), game: 'Wallet Top‑up (Apple)', amount: 10 });
+                storage.set(StorageKeys.walletHistory, JSON.stringify(arr).slice(0, 4000));
+              } catch {}
+              burst.setValue(0);
+              Animated.timing(burst, { toValue: 1, duration: 850, easing: Easing.out(Easing.exp), useNativeDriver: true }).start();
+            });
+          } catch (e: any) {
+            Alert.alert('Purchase failed', e?.message || 'Try again later');
+          }
+        }} />
         <View style={{ height: 10 }} />
-        <PixelButton title="Venmo - Add $10" onPress={onAddMoney} />
+        <PixelButton title="Simulate Add $10" onPress={() => {
+          const newBalance = balance + 10;
+          const newGems = gems + 100;
+          setBalance(newBalance);
+          setGems(newGems);
+          setAmount('');
+          try {
+            const raw = storage.getString(StorageKeys.walletHistory) || '[]';
+            const arr = JSON.parse(raw) as any[];
+            arr.unshift({ id: String(Date.now()), game: 'Wallet Top‑up (Simulated)', amount: 10 });
+            storage.set(StorageKeys.walletHistory, JSON.stringify(arr).slice(0, 4000));
+          } catch {}
+          burst.setValue(0);
+          Animated.timing(burst, { toValue: 1, duration: 850, easing: Easing.out(Easing.exp), useNativeDriver: true }).start(() => {
+            Alert.alert('Success', `Added $10 and 100 rubies!`);
+          });
+        }} />
 
         <Animated.View style={{ position: 'absolute', left: 0, right: 0, top: '40%', alignItems: 'center', opacity: burst.interpolate({ inputRange: [0, 1], outputRange: [0, 1] }), transform: [{ scale: burst.interpolate({ inputRange: [0, 1], outputRange: [0.5, 1.2] }) }] }}>
           <Text style={{ color: '#FFFFFF', fontSize: 28 }}>💥</Text>

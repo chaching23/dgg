@@ -2299,6 +2299,12 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
+  - RNIap (13.0.4):
+    - RCT-Folly
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - ReactCommon/turbomodule/core
   - RNReanimated (4.0.2):
     - boost
     - DoubleConversion
@@ -2680,6 +2686,7 @@ DEPENDENCIES:
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - "RNCMaskedView (from `../node_modules/@react-native-masked-view/masked-view`)"
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
+  - RNIap (from `../node_modules/react-native-iap`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
   - RNSVG (from `../node_modules/react-native-svg`)
@@ -2843,6 +2850,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-masked-view/masked-view"
   RNGestureHandler:
     :path: "../node_modules/react-native-gesture-handler"
+  RNIap:
+    :path: "../node_modules/react-native-iap"
   RNReanimated:
     :path: "../node_modules/react-native-reanimated"
   RNScreens:
@@ -2930,6 +2939,7 @@ SPEC CHECKSUMS:
   ReactCommon: 7aca047f2f453a7d7f0adeccb63810d61829235a
   RNCMaskedView: aac38cf7e947ff80e483996d1acd43c5ad4ab610
   RNGestureHandler: cdca641e24d0ab743dcd90a24de4e6259e6aa0de
+  RNIap: 7ad9d42eb59f4dc1226d58987472e7653902d82c
   RNReanimated: 9e740577abdcd54419aec836a0fc529d360cfa0d
   RNScreens: 75074e642b69b086813a943bdf63da7085fb2166
   RNSVG: 432ca012e24410cab11449afef353ce20573a59f

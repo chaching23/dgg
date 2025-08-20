@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 import { SafeScreen } from '@/components/templates';
 import { useTheme } from '@/theme';
@@ -29,6 +30,7 @@ const FEATURES: FeatureBox[] = [
 
 function Home() {
   const { fonts, borders, layout, variant } = useTheme();
+  const navigation = useNavigation();
 
   const columns = useMemo(() => {
     const left: FeatureBox[] = [];
@@ -72,6 +74,7 @@ function Home() {
                       marginVertical: 10,
                     },
                   ]}
+                  onPress={() => navigation.navigate('gameMatch' as never, { gameId: feature.id, gameTitle: feature.title } as never)}
                 >
                   <Text
                     style={[
@@ -104,6 +107,7 @@ function Home() {
                       marginVertical: 10,
                     },
                   ]}
+                  onPress={() => navigation.navigate('gameMatch' as never, { gameId: feature.id, gameTitle: feature.title } as never)}
                 >
                   <Text
                     style={[

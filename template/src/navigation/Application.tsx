@@ -8,6 +8,7 @@ import { Paths } from '@/navigation/paths';
 import { useTheme } from '@/theme';
 
 import { Login, Signup, Startup } from '@/screens';
+import GameMatch from '@/screens/Play/GameMatch';
 import AddMoney from '@/screens/Wallet/AddMoney';
 import { storage, StorageKeys } from '@/storage';
 import AppDrawer from '@/navigation/AppDrawer';
@@ -39,6 +40,7 @@ function ApplicationNavigator() {
                   headerShadowVisible: false,
                 }}
               />
+              <Stack.Screen component={GameMatch} name={Paths.GameMatch} />
             </>
           ) : (
             <>
@@ -57,6 +59,7 @@ function ApplicationNavigator() {
                   headerShadowVisible: false,
                 }}
               />
+              <Stack.Screen component={GameMatch} name={Paths.GameMatch} />
             </>
           )}
         </Stack.Navigator>

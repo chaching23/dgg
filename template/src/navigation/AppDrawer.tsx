@@ -7,7 +7,7 @@ import { useTheme } from '@/theme';
 import { supabase } from '@/services/instance';
 import { CommonActions, useNavigation } from '@react-navigation/native';
 import { storage, StorageKeys } from '@/storage';
-import { CashIcon, GemIcon, MenuIcon, PlusIcon } from '@/components/disrupt/PixelIcons';
+import { DollarIcon, GemIcon, MenuIcon, PlusIcon } from '@/components/disrupt/PixelIcons';
 import { Paths } from '@/navigation/paths';
 
 const Drawer = createDrawerNavigator();
@@ -111,7 +111,7 @@ export default function AppDrawer() {
     }, []);
     return (
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <CashIcon size={18} color={variant === 'dark' ? '#FFFFFF' : '#111111'} />
+        <DollarIcon size={18} color={'#00C853'} />
         <Text style={[fonts.size_16, fonts.bold, { color: variant === 'dark' ? '#FFFFFF' : '#111111', marginLeft: 6, marginRight: 6 }]}>${balance.toFixed(2)}</Text>
         <TouchableOpacity onPress={() => navigation.navigate(Paths.AddMoneyModal as never)} style={{ paddingHorizontal: 8, paddingVertical: 8, borderRadius: 10, backgroundColor: variant === 'dark' ? '#1C1C1C' : '#EFEFEF' }}>
           <PlusIcon size={16} />

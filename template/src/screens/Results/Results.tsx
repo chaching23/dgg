@@ -1,5 +1,5 @@
 import React from 'react';
-import { FlatList, Text, View } from 'react-native';
+import { FlatList, Image, Text, View } from 'react-native';
 import { SafeScreen } from '@/components/templates';
 import { useTheme } from '@/theme';
 import { storage, StorageKeys } from '@/storage';
@@ -10,20 +10,25 @@ type ResultItem = {
   amount: number; // positive for win, negative for loss
 };
 
-const sampleData: ResultItem[] = [
-  { id: '1', game: 'Puzzle Dash', amount: 5 },
-  { id: '2', game: 'Aim Trainer', amount: -3 },
-  { id: '3', game: 'Memory Flip', amount: 12 },
-];
+function useResults(): ResultItem[] {
+  try {
+    const raw = storage.getString(StorageKeys.walletHistory) || '[]';
+    const arr = JSON.parse(raw) as any[];
+    return arr as ResultItem[];
+  } catch {
+    return [];
+  }
+}
 
 export default function Results() {
   const { layout, gutters, fonts } = useTheme();
+  const data = useResults();
   return (
     <SafeScreen>
       <View style={[layout.flex_1, gutters.padding_16]}>
         <Text style={[fonts.size_24, fonts.bold, { color: '#FFFFFF' }]}>Results</Text>
         <FlatList
-          data={sampleData}
+          data={data}
           keyExtractor={(item) => item.id}
           ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
           renderItem={({ item }) => {
@@ -56,11 +61,19 @@ export default function Results() {
               storage.set(StorageKeys.etfHistory, JSON.stringify(arr).slice(0, 4000));
             } catch {}
             return (
-              <View style={{ backgroundColor: '#111', borderRadius: 12, padding: 12, flexDirection: 'row', justifyContent: 'space-between' }}>
-                <Text style={[fonts.size_16, { color: '#FFFFFF' }]}>{item.game}</Text>
-                <Text style={[fonts.size_16, { color: positive ? '#00E07A' : '#FF4D4D' }]}>
-                  {positive ? '+' : ''}${item.amount.toFixed(2)}
-                </Text>
+              <View style={{ backgroundColor: '#111', borderRadius: 12, padding: 12, flexDirection: 'row', alignItems: 'center' }}>
+                <View style={{ width: '25%', alignItems: 'center' }}>
+                  <View style={{ width: 44, height: 44, borderRadius: 8, backgroundColor: '#0F0F0F', alignItems: 'center', justifyContent: 'center' }}>
+                    <Text style={{ color: '#FFFFFF', fontWeight: '700' }}>{item.game.slice(0, 1)}</Text>
+                  </View>
+                </View>
+                <View style={{ width: '75%', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Text style={[fonts.size_16, { color: '#FFFFFF' }]}>{item.game}</Text>
+                  <Text style={[fonts.size_16, { color: positive ? '#00E07A' : '#FF4D4D' }]}>
+                    {positive ? 'Win ' : 'Loss '}
+                    {positive ? '+' : '-'}${Math.abs(item.amount).toFixed(2)}
+                  </Text>
+                </View>
               </View>
             );
           }}

@@ -84,21 +84,18 @@ function Signup({ navigation }: RootScreenProps<Paths.Signup>) {
     return () => { subLink.remove(); sub.data.subscription.unsubscribe(); };
   }, [navigation]);
 
-  const onDiscord = async () => {
+  const onApple = async () => {
     try {
       const redirectTo = 'disrupt://auth/callback';
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: 'discord',
-        options: { redirectTo, scopes: 'identify email' },
-      });
+      const { data, error } = await supabase.auth.signInWithOAuth({ provider: 'apple', options: { redirectTo } });
       if (error) throw error;
       if (data?.url) {
         await Linking.openURL(data.url);
       } else {
-        Alert.alert('Discord', 'No auth URL returned. Check Supabase provider config.');
+        Alert.alert('Apple Sign In', 'No auth URL returned. Check Supabase provider config.');
       }
     } catch (e: any) {
-      Alert.alert('Discord login failed', e?.message ?? 'Unknown error');
+      Alert.alert('Apple login failed', e?.message ?? 'Unknown error');
     }
   };
 
@@ -151,8 +148,26 @@ function Signup({ navigation }: RootScreenProps<Paths.Signup>) {
             {loading ? t('loading', { defaultValue: 'Loading...' }) : t('signup', { defaultValue: 'Sign up' })}
           </Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={onDiscord} style={[components.buttonPrimary, { backgroundColor: '#5865F2', marginTop: 12, paddingVertical: 16, borderRadius: 16 }]}> 
-          <Text style={[fonts.size_16, fonts.alignCenter, fonts.uppercase, fonts.bold, { color: '#FFFFFF', letterSpacing: 0.5 }]}>Continue with Discord</Text>
+        {/* Standard Apple Sign In button with white border and shadow */}
+        <TouchableOpacity
+          onPress={onApple}
+          style={{
+            marginTop: 12,
+            height: 44,
+            borderRadius: 10,
+            backgroundColor: '#000000',
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderWidth: 1,
+            borderColor: '#FFFFFF',
+            shadowColor: '#000',
+            shadowOpacity: 0.25,
+            shadowRadius: 6,
+            shadowOffset: { width: 0, height: 3 },
+            elevation: 5,
+          }}
+        >
+          <Text style={{ color: '#FFFFFF', fontSize: 16, fontWeight: '700' }}>Sign in with Apple</Text>
         </TouchableOpacity>
 
         <TouchableOpacity onPress={() => navigation.navigate(Paths.Login)} style={[gutters.marginTop_16]}>

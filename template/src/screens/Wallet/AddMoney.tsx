@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Alert, Animated, Easing, Linking, Platform, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Animated, Easing, Linking, Text, TouchableOpacity, View } from 'react-native';
 import { SafeScreen } from '@/components/templates';
 import { useTheme } from '@/theme';
 import GradientInput from '@/components/disrupt/GradientInput';
@@ -10,10 +10,6 @@ import { initIap, purchaseWallet10, getProducts } from '@/services/iap';
 export default function AddMoney() {
   const { layout, gutters, fonts, variant } = useTheme();
   const [amount, setAmount] = useState('');
-  const [balance, setBalanceState] = useState<number>(() => {
-    const value = storage.getNumber(StorageKeys.walletBalance as any);
-    return typeof value === 'number' && !Number.isNaN(value) ? value : 0;
-  });
   const [gems, setGemsState] = useState<number>(() => {
     const value = storage.getNumber(StorageKeys.walletGems as any);
     return typeof value === 'number' && !Number.isNaN(value) ? value : 0;
@@ -21,10 +17,6 @@ export default function AddMoney() {
 
   const burst = useState(new Animated.Value(0))[0];
 
-  const setBalance = (value: number) => {
-    setBalanceState(value);
-    storage.set(StorageKeys.walletBalance, value);
-  };
   const setGems = (value: number) => {
     setGemsState(value);
     storage.set(StorageKeys.walletGems, value);
@@ -57,7 +49,7 @@ export default function AddMoney() {
       <View style={[layout.flex_1, gutters.padding_24]}>
         <Text style={[fonts.size_24, fonts.bold, variant === 'dark' ? fonts.gray50 : fonts.gray800]}>Add Money</Text>
         <View style={{ height: 8 }} />
-        <Text style={[fonts.size_12, variant === 'dark' ? fonts.gray400 : fonts.gray200]}>Current balance (local): ${balance.toFixed(2)}</Text>
+        <Text style={[fonts.size_12, variant === 'dark' ? fonts.gray400 : fonts.gray200]}>Diamonds (local): {gems}</Text>
 
         <View style={{ height: 24 }} />
         <GradientInput
@@ -89,15 +81,15 @@ export default function AddMoney() {
         <View style={{ height: 24 }} />
         <PixelButton title="Go to website for purchase (no fee) – $10.00" onPress={onWebsiteCheckout} />
         <View style={{ height: 10 }} />
-        <PixelButton title="Apple In‑App Purchase (30% fee) – $12.99" onPress={async () => {
+        <PixelButton title="Buy 10 Diamonds (Apple) – $12.99" onPress={async () => {
           try {
             await purchaseWallet10(() => {
-              const newBalance = balance + 10;
-              setBalance(newBalance);
+              const newGems = gems + 10;
+              setGems(newGems);
               try {
                 const raw = storage.getString(StorageKeys.walletHistory) || '[]';
                 const arr = JSON.parse(raw) as any[];
-                arr.unshift({ id: String(Date.now()), game: 'Wallet Top‑up (Apple)', amount: 10 });
+                arr.unshift({ id: String(Date.now()), game: 'Top‑up (Apple)', amountGems: 10 });
                 storage.set(StorageKeys.walletHistory, JSON.stringify(arr).slice(0, 4000));
               } catch {}
               burst.setValue(0);
@@ -108,21 +100,19 @@ export default function AddMoney() {
           }
         }} />
         <View style={{ height: 10 }} />
-        <PixelButton title="Simulate Add $10" onPress={() => {
-          const newBalance = balance + 10;
-          const newGems = gems + 100;
-          setBalance(newBalance);
+        <PixelButton title="Simulate +10 Diamonds" onPress={() => {
+          const newGems = gems + 10;
           setGems(newGems);
           setAmount('');
           try {
             const raw = storage.getString(StorageKeys.walletHistory) || '[]';
             const arr = JSON.parse(raw) as any[];
-            arr.unshift({ id: String(Date.now()), game: 'Wallet Top‑up (Simulated)', amount: 10 });
+            arr.unshift({ id: String(Date.now()), game: 'Top‑up (Simulated)', amountGems: 10 });
             storage.set(StorageKeys.walletHistory, JSON.stringify(arr).slice(0, 4000));
           } catch {}
           burst.setValue(0);
           Animated.timing(burst, { toValue: 1, duration: 850, easing: Easing.out(Easing.exp), useNativeDriver: true }).start(() => {
-            Alert.alert('Success', `Added $10 and 100 rubies!`);
+            Alert.alert('Success', `Added 10 diamonds!`);
           });
         }} />
 

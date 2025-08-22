@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
-import { DollarIcon, GemIcon, MenuIcon, PlusIcon } from '@/components/disrupt/PixelIcons';
+import { GemIcon, MenuIcon, PlusIcon } from '@/components/disrupt/PixelIcons';
 import { useTheme } from '@/theme';
 import { storage, StorageKeys } from '@/storage';
 
@@ -45,10 +45,10 @@ export default function TopHeader({ onPressAdd, onPressMenu }: Props) {
         <Text style={[fonts.size_16, fonts.bold, { color: '#FFFFFF', marginLeft: 6 }]}>{gems}</Text>
       </View>
 
-      {/* Right: Cash + plus */}
+      {/* Right: Diamonds + plus */}
       <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
-        <DollarIcon size={18} color={'#00C853'} />
-        <Text style={[fonts.size_16, fonts.bold, { color: '#FFFFFF', marginLeft: 6, marginRight: 6 }]}>${dollars.toFixed(2)}</Text>
+        <GemIcon size={18} color={'#66E0FF'} />
+        <Text style={[fonts.size_16, fonts.bold, { color: '#FFFFFF', marginLeft: 6, marginRight: 6 }]}>{gems}</Text>
         <TouchableOpacity onPress={() => (onPressAdd ? onPressAdd() : navigate('addMoneyModal'))} style={{ paddingHorizontal: 8, paddingVertical: 8, borderRadius: 10, backgroundColor: '#0E3B1F' }}>
           <PlusIcon size={16} color={'#00E676'} />
         </TouchableOpacity>

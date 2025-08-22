@@ -1,47 +1,42 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
 import { SafeScreen } from '@/components/templates';
-import type { RootScreenProps } from '@/navigation/types';
+// import type { RootScreenProps } from '@/navigation/types';
 import { useTheme } from '@/theme';
 import PixelButton from '@/components/disrupt/PixelButton';
-import { GemIcon, DollarIcon } from '@/components/disrupt/PixelIcons';
+import { GemIcon } from '@/components/disrupt/PixelIcons';
 import { storage, StorageKeys } from '@/storage';
+import { connectMatchmaking, joinQueue, onMatchStart, offMatchStart } from '@/services/matchmaking';
 import { ImageBackground } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+// import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-type Props = RootScreenProps<'gameMatch'>;
+type Props = any;
 
 export default function GameMatch({ route, navigation }: Props) {
-  const { gameId, gameTitle } = (route.params || { gameId: 'unknown', gameTitle: 'Game' }) as any;
-  const { layout, gutters, fonts } = useTheme();
-  const [selected, setSelected] = useState<'FREE' | 'CASH' | 'GEMS'>('FREE');
+  const { gameTitle } = (route?.params || { gameId: 'unknown', gameTitle: 'Game' }) as any;
+  const { layout, fonts } = useTheme();
+  const [selected, setSelected] = useState<'FREE' | 'GEMS'>('FREE');
   const [stake, setStake] = useState<number>(1); // represents target win amount for CASH; for GEMS, represents 10*stake units
   const [matching, setMatching] = useState<boolean>(false);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  // const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   const stakes = useMemo(() => [1, 2, 3, 6, 10, 20, 50], []);
-  const insets = useSafeAreaInsets();
+  // const insets = useSafeAreaInsets();
 
   useEffect(() => {
-    return () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
+    connectMatchmaking('http://localhost:4000');
+    const handler = ({ matchId, seed }: any) => {
+      setMatching(false);
+      navigation.navigate('unityGame' as never, { gameTitle, mode: 'GEMS', stake, matchId, seed } as never);
     };
-  }, []);
+    onMatchStart(handler);
+    return () => offMatchStart(handler);
+  }, [navigation, gameTitle, stake]);
 
   const startMatch = () => {
     setMatching(true);
-    timerRef.current = setTimeout(() => {
-      // Simulate match found or queued start; navigate back and push a sample result
-      setMatching(false);
-      const amount = selected === 'CASH' ? (Math.random() > 0.5 ? stake : -stake) : 0;
-      try {
-        const resultsRaw = storage.getString(StorageKeys.walletHistory) || '[]';
-        const results = JSON.parse(resultsRaw) as any[];
-        results.unshift({ id: String(Date.now()), game: gameTitle, amount });
-        storage.set(StorageKeys.walletHistory, JSON.stringify(results).slice(0, 4000));
-      } catch {}
-      navigation.goBack();
-    }, 5000);
+    const playerId = storage.getString(StorageKeys.username) || `p_${Date.now()}`;
+    joinQueue({ playerId, stake });
   };
 
   return (
@@ -55,17 +50,16 @@ export default function GameMatch({ route, navigation }: Props) {
               <Text style={{ color: '#FFFFFF' }}>← Back</Text>
             </TouchableOpacity>
             <ImageBackground source={require('@/assets/branding/DisruptP.png')} resizeMode="cover" style={{ flex: 1, width: '100%', alignItems: 'center', justifyContent: 'center' }}>
-              <Text style={[fonts.size_20, fonts.bold, { color: '#FFFFFF', textShadowColor: '#000', textShadowRadius: 8 }]}>{gameTitle}</Text>
+              <Text style={[fonts.size_16, fonts.bold, { color: '#FFFFFF', textShadowColor: '#000', textShadowRadius: 8 }]}>{gameTitle}</Text>
               <Text style={[fonts.size_12, { color: '#EDEDED', marginTop: 4 }]}>Arcade Match</Text>
             </ImageBackground>
           </View>
           <View style={{ height: 16 }} />
-          {/* Mode selector: Free | 1v1 | Gems */}
+          {/* Mode selector: Free | Diamonds (1v1) */}
           <View style={{ flexDirection: 'row', backgroundColor: '#0F0F0F', borderRadius: 12 }}>
             {([
               { key: 'FREE', label: 'Free' },
-              { key: 'CASH', label: '1v1' },
-              { key: 'GEMS', label: 'Gems' },
+              { key: 'GEMS', label: 'Diamonds (1v1)' },
             ] as const).map((t) => (
               <TouchableOpacity
                 key={t.key}
@@ -92,14 +86,11 @@ export default function GameMatch({ route, navigation }: Props) {
                 <View style={{ minWidth: 120, alignItems: 'center', justifyContent: 'center' }}>
                   {selected === 'GEMS' ? (
                     <View style={{ flexDirection: 'row', alignItems: 'baseline' }}>
-                      <GemIcon size={18} />
-                      <Text style={{ color: '#FFFFFF', fontSize: 44, fontWeight: '800', marginLeft: 6 }}>{stake * 10}</Text>
+                      <GemIcon size={18} color={'#66E0FF'} />
+                      <Text style={{ color: '#FFFFFF', fontSize: 44, fontWeight: '800', marginLeft: 6 }}>{stake}</Text>
                     </View>
                   ) : (
-                    <View style={{ flexDirection: 'row', alignItems: 'baseline' }}>
-                      <DollarIcon size={18} />
-                      <Text style={{ color: '#FFFFFF', fontSize: 44, fontWeight: '800', marginLeft: 6 }}>${stake}</Text>
-                    </View>
+                    <Text style={{ color: '#FFFFFF', fontSize: 44, fontWeight: '800', marginLeft: 6 }}>Free</Text>
                   )}
                 </View>
                 <TouchableOpacity
@@ -113,9 +104,7 @@ export default function GameMatch({ route, navigation }: Props) {
               {/* Entry */}
               <View style={{ height: 14 }} />
               {selected !== 'FREE' && (
-                <Text style={{ color: '#00E07A', fontWeight: '800' }}>
-                  {selected === 'GEMS' ? `${Math.round(stake * 6)} gems` : `$${(stake * 0.6).toFixed(2)}`} Entry
-                </Text>
+                <Text style={{ color: '#00E07A', fontWeight: '800' }}>{`${stake} diamonds Entry`}</Text>
               )}
               {/* Progress bar boxes */}
               <View style={{ height: 12 }} />
@@ -131,16 +120,7 @@ export default function GameMatch({ route, navigation }: Props) {
           </View>
           {/* Footer: Play button and status */}
           <View>
-            <PixelButton
-              title={
-                selected === 'FREE'
-                  ? 'Play for Free'
-                  : selected === 'GEMS'
-                  ? `Play for ${stake * 10} gems`
-                  : `Play for $${stake}`
-              }
-              onPress={startMatch}
-            />
+            <PixelButton title={selected === 'FREE' ? 'Play for Free' : `Play for ${stake} diamonds`} onPress={startMatch} />
             <View style={{ height: 12 }} />
             {matching ? (
               <View style={{ alignItems: 'center', padding: 10 }}>

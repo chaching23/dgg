@@ -7,7 +7,8 @@ import { storage, StorageKeys } from '@/storage';
 type ResultItem = {
   id: string;
   game: string;
-  amount: number; // positive for win, negative for loss
+  amount?: number; // dollars
+  amountGems?: number; // diamonds
 };
 
 function useResults(): ResultItem[] {
@@ -32,20 +33,24 @@ export default function Results() {
           keyExtractor={(item) => item.id}
           ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
           renderItem={({ item }) => {
-            const positive = item.amount >= 0;
+            const isGem = typeof item.amountGems === 'number';
+            const amt = isGem ? (item.amountGems as number) : (item.amount as number) || 0;
+            const positive = amt >= 0;
             // Update progression
-            if (positive) {
+            if (!isGem && positive) {
               try {
                 const current = Number(storage.getNumber(StorageKeys.winsCount as any) || 0);
                 storage.set(StorageKeys.winsCount, current + 1);
               } catch {}
             }
             try {
-              const raw = storage.getString(StorageKeys.winningsHistory) || '[]';
-              const arr = JSON.parse(raw) as number[];
-              const last = arr[arr.length - 1] ?? 0;
-              arr.push(last + item.amount);
-              storage.set(StorageKeys.winningsHistory, JSON.stringify(arr).slice(0, 4000));
+              if (!isGem) {
+                const raw = storage.getString(StorageKeys.winningsHistory) || '[]';
+                const arr = JSON.parse(raw) as number[];
+                const last = arr[arr.length - 1] ?? 0;
+                arr.push(last + (item.amount || 0));
+                storage.set(StorageKeys.winningsHistory, JSON.stringify(arr).slice(0, 4000));
+              }
             } catch {}
             // ETF allocation: 30% equally among players (placeholder: 2 players)
             try {
@@ -69,10 +74,17 @@ export default function Results() {
                 </View>
                 <View style={{ width: '75%', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                   <Text style={[fonts.size_16, { color: '#FFFFFF' }]}>{item.game}</Text>
-                  <Text style={[fonts.size_16, { color: positive ? '#00E07A' : '#FF4D4D' }]}>
-                    {positive ? 'Win ' : 'Loss '}
-                    {positive ? '+' : '-'}${Math.abs(item.amount).toFixed(2)}
-                  </Text>
+                  {isGem ? (
+                    <Text style={[fonts.size_16, { color: positive ? '#00E07A' : '#FF4D4D' }]}>
+                      {positive ? 'Win ' : 'Loss '}
+                      {positive ? '+' : '-'}{Math.abs(amt)} diamonds
+                    </Text>
+                  ) : (
+                    <Text style={[fonts.size_16, { color: positive ? '#00E07A' : '#FF4D4D' }]}>
+                      {positive ? 'Win ' : 'Loss '}
+                      {positive ? '+' : '-'}${Math.abs(amt).toFixed(2)}
+                    </Text>
+                  )}
                 </View>
               </View>
             );
